@@ -42,8 +42,6 @@ public class App
  try {
 	 
 	 
-	 
-	 
 	 		String textValue ="Year "+2015;
 			Document doc =Jsoup.connect(TargetURL).get();
 			Elements elements= doc.getElementsByClass("year");
