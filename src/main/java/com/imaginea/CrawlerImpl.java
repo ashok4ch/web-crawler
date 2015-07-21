@@ -70,6 +70,7 @@ public class CrawlerImpl implements Crawler{
 			//this.createDirs("/"+inputYearText);
 			this.createDirs();
 			this.loadLinks();
+			//below code commented as per as part of design changes to improve performance
 			/*MailLoader mailloader = new MailLoaderImpl();
 			mailloader.processMailLoader(this.getMonthlywiselinks());*/
 		}
@@ -105,8 +106,8 @@ public class CrawlerImpl implements Crawler{
 				break; 
 			}
 		}
+		logger.debug("loadLinks execution has ended");
 		
-		//Loading all links of each month
 	}
 	
 	public void loadmonthylinks(String monthLink,String monthName){
@@ -141,7 +142,7 @@ public class CrawlerImpl implements Crawler{
 	}
 
 	public void loadmonthyMails(String monthLink,String monthName){
-		
+		logger.debug("loadmonthyMails() method execution started for the month"+monthName);
 		File monthlyDir =new File(this.getRootDir(), monthName);
 		monthlyDir.mkdirs();
 		Document monthDoc= CrawlerUtil.getDocument(monthLink);
@@ -163,7 +164,7 @@ public class CrawlerImpl implements Crawler{
 			executor.execute(mailLoader);
 		}
 		executor.shutdown();
-		
+		logger.debug("loadmonthyMails() method execution has ended for the month"+monthName);
 	}
 	
 	

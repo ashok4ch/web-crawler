@@ -10,6 +10,7 @@ public class CrawlerMain {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		//CrawlerUtil.setLogLevel();
+
 		stratCrawler();
 		ArrayBlockingQueue<String> bQueue = new ArrayBlockingQueue<>(20);
 		try {
