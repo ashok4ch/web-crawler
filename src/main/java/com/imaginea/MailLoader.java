@@ -3,16 +3,16 @@
  */
 package com.imaginea;
 
+import java.io.File;
 import java.util.List;
-import java.util.Map;
 
-import com.imaginea.CrawlerImp.MonthlyLinks;
+import com.imaginea.CrawlerImpl.MonthlyLinks;
 
 /**
  * @author ashokh
  *
  */
 public interface MailLoader {
-	public void processMailLoader(Crawler ctlm);
-	public String processMailLoader(String linkURL);
+	public void processMailLoader(List<MonthlyLinks > mLinksList);
+	public void processMailLoader(File targetDir, Mail mailObject);
 }
