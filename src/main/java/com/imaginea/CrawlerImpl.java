@@ -29,12 +29,12 @@ public class CrawlerImpl implements Crawler{
 		MonthlylinksList = monthlylinksList;
 	}
 	
-	public File getRootDir() {
+	private File getRootDir() {
 		return rootDir;
 	}
-	public List<MonthlyLinks> getMonthlywiselinks() {
+	/*public List<MonthlyLinks> getMonthlywiselinks() {
 		return Collections.unmodifiableList(this.getMonthlylinksList());
-	}
+	}*/
 	public Document getDocument() {
 		return document;
 	}
@@ -56,6 +56,7 @@ public class CrawlerImpl implements Crawler{
 		logger.debug("isInputYearValid execution start");
 		String textValue ="Year "+inputYear;
 		return this.document.text().contains(textValue);
+	
 	}
 	
 	public void executeCrawler(){
