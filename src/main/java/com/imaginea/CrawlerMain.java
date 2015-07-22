@@ -1,25 +1,17 @@
 package com.imaginea;
 
 import java.util.Scanner;
-import java.util.concurrent.ArrayBlockingQueue;
 
 import org.apache.log4j.Logger;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 public class CrawlerMain {
 	public final static Logger logger = Logger.getLogger(CrawlerMain.class);
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		//CrawlerUtil.setLogLevel();
-
 		stratCrawler();
-		ArrayBlockingQueue<String> bQueue = new ArrayBlockingQueue<>(20);
-		try {
-			bQueue.put("Ashok ");
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
 	}
 		
 		public static void stratCrawler(){
@@ -40,5 +32,28 @@ public class CrawlerMain {
 		}
 		
 	}
+		
+		public static void  test(Document doc){
+			Elements elements= doc.getElementsByClass("year");
+			for(Element element : elements){
+				if(element.getElementsByTag("thead").text().equals("Year 2014")){
+					Elements trs = element.getElementsByTag("tbody").first().getElementsByTag("tr");
+					for(Element trElement : trs){
+						String monthName= trElement.getElementsByClass("date").first().text();
+						String monthLink= trElement.select("a").first().attr("abs:href");
+						//int noOfpages = 3;
+						//Code to load the all mails links of respective month
+						logger.debug("Links of "+monthName+" month load start ");
+						logger.debug("Links is "+trElement.select("a"));
+						if(monthLink.isEmpty())
+							continue;
+						//loadmonthyMails(monthLink, monthName);
+						break;
+					}
+					break; 
+				}
+			}
+		
+		}
 	
 }

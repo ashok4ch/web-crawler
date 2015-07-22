@@ -2,7 +2,6 @@ package com.imaginea;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -11,19 +10,20 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.imaginea.CrawlerImpl.MonthlyLinks;
-
 public class GenericCrawlerImpl implements Crawler{
 	private Set visitedURLSet = null;
 	private List URLsList = new ArrayList<>();
+	private File rootDir = null;
 	public GenericCrawlerImpl(){
-		visitedURLSet  = new HashSet<String>();
-		URLsList = new ArrayList<String>();
+		this.visitedURLSet  = new HashSet<String>();
+		this.URLsList = new ArrayList<String>();
+		this.rootDir = new File(Crawler.targetRootDIRPath);
+		this.rootDir.mkdirs();
 	}
-	public static void main(String[] args) {
+/*	public static void main(String[] args) {
 		new GenericCrawlerImpl().executeCrawler();
 	}
-	
+*/	
 	public void executeCrawler(){
 		
 		System.out.println("Hi" +CrawlerUtil.getDocument("http://mail-archives.apache.org/mod_mbox/maven-users/201507.mbox/ajax/%3CCAOe3-fZbQ4QeUNDkYyUUZ7bsoUFa_%2BEN9hxqDh%2BOzm6ybVecKw%40mail.gmail.com%3E").textNodes());
@@ -41,19 +41,18 @@ public class GenericCrawlerImpl implements Crawler{
 			if(!this.isValidURL(URLstr) && this.isVisitedURL(URLstr))
 				continue;
 			if(this.isDocEmail(doc)){
-				loadMail(new File("crawler/").mkdir(),doc);
+				//loadMail(new File("crawler/").mkdir(),doc);
 			}
 			this.addToVisitedURLset(URLstr);
 		}
 	}
 	
-	private void loadMail(File rootDir, Document doc){
-		
-	}
 	private void processDocument(String strURL){
 	
 		Document doc = CrawlerUtil.getDocument(Crawler.targetURL);
-		
+		if(isDocEmail(doc)){
+			
+		}
 		Elements links = doc.select("a");//.attr("abs:href");
 		for(Element linkElement : links){
 			//System.out.println(e.attr("abs:href"));
@@ -65,9 +64,14 @@ public class GenericCrawlerImpl implements Crawler{
 			//isDocEmail(document)
 		}
 	}
+
+	private void saveMail(Document document){
+		
+	}
 	
-	
-	
+	private File getRootDir(){
+		return this.rootDir;
+	}
 	
 	private boolean isValidURL(String URL){
 		return URL.contains(Crawler.targetURL);
@@ -88,7 +92,7 @@ public class GenericCrawlerImpl implements Crawler{
 	}
 	
 	private void addToVisitedURLset(String URLstr){
-		visitedURLSet.add(URLstr);
+		//visitedURLSet.add(URLstr);
 	}
 	
 }

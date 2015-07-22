@@ -1,12 +1,30 @@
 package com.imaginea;
 
+import java.io.File;
+
 /**
  * @author ashokh
  *
  */
 public class Mail {
-	String msgName = null;
-	String msgLink = null;
+	private String msgName = null;
+	private String msgLink = null;
+	private File fileDirectory =null;
+	
+	/**
+	 * @return the fileDirectory
+	 */
+	
+	public File getFileDirectory() {
+		return fileDirectory;
+	}
+	/**
+	 * @param fileDirectory the fileDirectory to set
+	 */
+	
+	public void setFileDirectory(File fileDirectory) {
+		this.fileDirectory = fileDirectory;
+	}
 	/**
 	 * @return the msgName
 	 */

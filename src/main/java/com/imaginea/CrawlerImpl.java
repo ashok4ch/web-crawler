@@ -1,9 +1,6 @@
 package com.imaginea;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -16,25 +13,15 @@ import org.jsoup.select.Elements;
  */
 public class CrawlerImpl implements Crawler{
 	public final static Logger logger = Logger.getLogger(CrawlerMain.class);
-	private List<MonthlyLinks> MonthlylinksList = null;
 	private Document document=null;
 	private int inputYear=0;
 	private String inputYearText=null;
 	private File rootDir = null;
 
-	public List<MonthlyLinks> getMonthlylinksList() {
-		return MonthlylinksList;
-	}
-	public void setMonthlylinksList(List<MonthlyLinks> monthlylinksList) {
-		MonthlylinksList = monthlylinksList;
-	}
 	
 	private File getRootDir() {
 		return rootDir;
 	}
-	/*public List<MonthlyLinks> getMonthlywiselinks() {
-		return Collections.unmodifiableList(this.getMonthlylinksList());
-	}*/
 	public Document getDocument() {
 		return document;
 	}
@@ -46,8 +33,6 @@ public class CrawlerImpl implements Crawler{
 	}
 
 	public CrawlerImpl( int inputYear){
-		//this.Monthlywiselinks=new HashMap<String, MonthlyLinks>();
-		this.MonthlylinksList = new ArrayList<MonthlyLinks>();
 		this.inputYear=inputYear;
 		this.inputYearText= "Year "+inputYear;
 		this.document = CrawlerUtil.getDocument(Crawler.targetURL);//Jsoup.connect(Crawler.targetURL).get();
@@ -68,12 +53,8 @@ public class CrawlerImpl implements Crawler{
 			return;
 		}
 		if(this.isInputYearValid(inputYear)==true){
-			//this.createDirs("/"+inputYearText);
 			this.createDirs();
 			this.loadLinks();
-			//below code commented as per as part of design changes to improve performance
-			/*MailLoader mailloader = new MailLoaderImpl();
-			mailloader.processMailLoader(this.getMonthlywiselinks());*/
 		}
 		
 		logger.debug("executeCrawler execution end");
@@ -88,6 +69,7 @@ public class CrawlerImpl implements Crawler{
 	private void loadLinks(){
 		logger.debug("loadLinks execution start");
 		//loading all Months links of the input year
+	
 		Elements elements= this.document.getElementsByClass("year");
 		for(Element element : elements){
 			if(element.getElementsByTag("thead").text().equals(this.inputYearText)){
@@ -100,9 +82,6 @@ public class CrawlerImpl implements Crawler{
 					if(monthLink.isEmpty())
 						continue;
 					loadmonthyMails(monthLink, monthName);
-					
-					//loadmonthylinks(monthLink, monthName);// Before review application flow
-						
 				}
 				break; 
 			}
@@ -111,46 +90,39 @@ public class CrawlerImpl implements Crawler{
 		
 	}
 	
-	public void loadmonthylinks(String monthLink,String monthName){
-		
-		List<Mail> monthlinkslist = new ArrayList<Mail>();
-		
-		File monthlyDir =new File(this.getRootDir(), monthName);
-		monthlyDir.mkdirs();
-		
-		Document monthDoc= CrawlerUtil.getDocument(monthLink);
-		Elements monthlinks = monthDoc.getElementById("msglist").getElementsByTag("tbody").first().getElementsByTag("tr");
-		for(int i=0; i<monthlinks.size(); i++){
-			String msgfileName=monthlinks.get(i).text(); // test for msg naem
-			String msgLink = monthlinks.get(i).select("a").attr("abs:href");
-			if(msgLink.isEmpty()){
-				continue;
-			}
-			Mail mail= new Mail();
-			mail.setMsgName(msgfileName);
-			mail.setMsgLink(msgLink.replaceFirst(".mbox/%", ".mbox/raw/%"));
-			
-		
-			monthlinkslist.add(mail);
-		}
-		MonthlyLinks monLinks = new MonthlyLinks();
-		monLinks.setMonthDir(monthlyDir);
-		monLinks.setMonthName(monthName);
-		monLinks.setMonthLinks(monthLink);
-		monLinks.setLinksList(monthlinkslist);
-	    this.MonthlylinksList.add(monLinks);
-		
-	}
-
 	public void loadmonthyMails(String monthLink,String monthName){
 		logger.debug("loadmonthyMails() method execution started for the month"+monthName);
-		File monthlyDir =new File(this.getRootDir(), monthName);
-		monthlyDir.mkdirs();
+		File monthDir =new File(this.getRootDir(), monthName);
+		monthDir.mkdirs();
 		Document monthDoc= CrawlerUtil.getDocument(monthLink);
-		Elements monthlinks = monthDoc.getElementById("msglist").getElementsByTag("tbody").first().getElementsByTag("tr");
-		ExecutorService executor = Executors.newFixedThreadPool(20);
+		int noOfPage = (monthDoc.getElementsByClass("pages").select("a").size() -1);
+		// if the month has only one page below if  block execute.
+		if(noOfPage <= 0){
+			ProcessPage(monthDoc, monthDir);
+			return ;
+		}
+		// To handle the multiple pages of a month mails
+		for(int j=0; j <= noOfPage; j++){
+			String PageLink = monthLink+"?"+j;
+			Document pageDoc = CrawlerUtil.getDocument(PageLink);
+			ProcessPage(pageDoc, monthDir);
+			
+		}
 		
-		for(int i=0; i<monthlinks.size(); i++){
+		logger.debug("loadmonthyMails() method execution has ended for the month"+monthName);
+	}
+	
+	//private void
+	/*private String getRootDirPath(){
+		return (rootDir != null) ? rootDir.getAbsolutePath() : "" ;
+	}*/
+	
+	private void ProcessPage(Document pageDoc, File monthDir)
+	{
+		ExecutorService executor = Executors.newFixedThreadPool(20);
+		Elements monthlinks = pageDoc.getElementById("msglist").getElementsByTag("tbody").first().getElementsByTag("tr");
+		int linkesSize = monthlinks.size();
+		for(int i=0; i<linkesSize; i++){
 			String msgfileName=monthlinks.get(i).text(); // test for msg naem
 			if(msgfileName.length() >150)
 				msgfileName = msgfileName.substring(0, 150)+"...";
@@ -161,73 +133,28 @@ public class CrawlerImpl implements Crawler{
 			Mail mail= new Mail();
 			mail.setMsgName(msgfileName);
 			mail.setMsgLink(msgLink.replaceFirst(".mbox/%", ".mbox/raw/%"));
-			MailLoadThread mailLoader = new MailLoadThread(monthlyDir, mail);
+			mail.setFileDirectory(monthDir);
+			MailLoadThread mailLoader = new MailLoadThread(mail);
 			executor.execute(mailLoader);
 		}
 		executor.shutdown();
-		logger.debug("loadmonthyMails() method execution has ended for the month"+monthName);
 	}
 	
-	
-	public String getRootDirPath(){
-		return (rootDir != null) ? rootDir.getAbsolutePath() : "" ;
-	}
-	
-	
-	 public class MonthlyLinks{
-		 private String monthName  = null;
-		 private String monthLinks = null;
-		 private List<Mail> linksList = null;
-		 private File monthDir =null;
-		 /**
-		 * @return the monthDir
-		 */
-		public File getMonthDir() {
-			return monthDir;
-		}
-		/**
-		 * @param monthDir the monthDir to set
-		 */
-		public void setMonthDir(File monthDir) {
-			this.monthDir = monthDir;
-		}
-		
-		 
-		public String getMonthName() {
-			return monthName;
-		}
-		public void setMonthName(String monthName) {
-			this.monthName = monthName;
-		}
-		public String getMonthLinks() {
-			return monthLinks;
-		}
-		public void setMonthLinks(String monthLinks) {
-			this.monthLinks = monthLinks;
-		}
-		public List<Mail> getLinksList() {
-			return linksList;
-		}
-		public void setLinksList(List<Mail> linksList) {
-			this.linksList = linksList;
-		}
-	}
-
 }
 
 class MailLoadThread implements Runnable{
-	private File  targetDir = null;
+	//private File  targetDir = null;
 	private Mail mailObject = null;
-	public  MailLoadThread(File  targetDir,Mail mailObject) {
+	public  MailLoadThread(Mail mailObject) {
 		// TODO Auto-generated constructor stub
-		this.targetDir	=	targetDir;
+		//this.targetDir	=	targetDir;
 		this.mailObject	=	mailObject;
 	}
 	 @Override
 	 public void run(){
 		 
 		 MailLoader mailloader = new MailLoaderImpl();
-		 mailloader.processMailLoader(this.targetDir,this.mailObject);
+		 mailloader.processMailLoader(this.mailObject);
 	 }
 	 
 }

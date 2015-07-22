@@ -7,14 +7,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 import org.jsoup.nodes.Document;
-
-import com.imaginea.CrawlerImpl.MonthlyLinks;
 
 /**
  * @author ashokh
@@ -23,7 +18,7 @@ import com.imaginea.CrawlerImpl.MonthlyLinks;
 public class MailLoaderImpl implements MailLoader {
 	private static Logger logger =Logger.getLogger(MailLoaderImpl.class);
 	
-	public void processMailLoader(List<MonthlyLinks > mLinksList){
+	/*public void processMailLoader(List<MonthlyLinks > mLinksList){
 		logger.debug("Mothos processMailLoader execution start");
 		ExecutorService executor = Executors.newFixedThreadPool(6);//creating a pool of 5 threads
 		for(MonthlyLinks monthObj : mLinksList){
@@ -33,9 +28,9 @@ public class MailLoaderImpl implements MailLoader {
 		executor.shutdown();
 		logger.debug("Mothod processMailLoader execution End");
 		
-	}
+	}*/
 	
-	public void processMailLoader(File targetDir, Mail mailObject){
+	public void processMailLoader(Mail mailObject){
 		logger.debug("processMailLoader for URL : "+mailObject.getMsgLink());
 		Document doc=	CrawlerUtil.getDocument(mailObject.getMsgLink());
 		if(doc == null){
@@ -43,8 +38,8 @@ public class MailLoaderImpl implements MailLoader {
 			return;
 		}
 		String msg = doc.text();
-		File msgFile = new File(targetDir,mailObject.getMsgName().replaceAll("[-+.^:,()?\\//*\"<>|=]","")+".txt");
-		saveMail(targetDir, msgFile, msg);
+		File msgFile = new File(mailObject.getFileDirectory(),mailObject.getMsgName().replaceAll("[-+.^:,()?\\//*\"<>|=]","")+".txt");
+		saveMail(mailObject.getFileDirectory(), msgFile, msg);
 	}
 	
 	public void saveMail(File targetDir, File fileObj,String msg){
@@ -63,7 +58,7 @@ public class MailLoaderImpl implements MailLoader {
 	}
 }
 
-  class MonthlyMailLoadThread implements Runnable{
+/*  class MonthlyMailLoadThread implements Runnable{
 	  private MonthlyLinks monthObj= null; 
 	  private final Logger logger= Logger.getLogger(MonthlyMailLoadThread.class);
 	  public MonthlyMailLoadThread(MonthlyLinks object){
@@ -105,5 +100,5 @@ public class MailLoaderImpl implements MailLoader {
 	 }
   
   }
-  
+*/  
   

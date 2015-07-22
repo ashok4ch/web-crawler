@@ -1,15 +1,14 @@
 package com.imaginea;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.Scanner;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 public class CrawlerUtil {
@@ -20,7 +19,12 @@ public class CrawlerUtil {
 		Document doc=null;
 		try { 
 			doc = Jsoup.connect(absUrl).get();
-		} catch (IOException e) {
+		}catch(HttpStatusException hse){
+			logger.fatal("The given URL:"+absUrl+" is not ccorrect. Please correct it ("+hse.getMessage()+")");
+		
+		}catch (UnknownHostException ukhe) {
+				logger.fatal("Crawler can not able to connect inter net/ system in Offline please check your internate connection.");
+		}catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			logger.error(e.getMessage());
