@@ -1,9 +1,7 @@
 package com.imaginea;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.jsoup.nodes.Document;
@@ -11,62 +9,83 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 public class GenericCrawlerImpl implements Crawler{
-	private Set visitedURLSet = null;
-	private List URLsList = new ArrayList<>();
+	private Set <String>visitedURLSet = null;
 	private File rootDir = null;
+//	private String RootURL=null;
+	private Link rootLink=null;
 	public GenericCrawlerImpl(){
 		this.visitedURLSet  = new HashSet<String>();
-		this.URLsList = new ArrayList<String>();
 		this.rootDir = new File(Crawler.targetRootDIRPath);
 		this.rootDir.mkdirs();
+		this.rootLink = new Link();
 	}
 /*	public static void main(String[] args) {
 		new GenericCrawlerImpl().executeCrawler();
 	}
 */	
 	public void executeCrawler(){
+		//System.out.println("Hi" +CrawlerUtil.getDocument("http://mail-archives.apache.org/mod_mbox/maven-users/201507.mbox/ajax/%3CCAOe3-fZbQ4QeUNDkYyUUZ7bsoUFa_%2BEN9hxqDh%2BOzm6ybVecKw%40mail.gmail.com%3E").textNodes());
+		rootLink.setParent(false);
+		rootLink.setLink(Crawler.targetURL);
+		rootLink.setParentLink("");
+		rootLink.setLevel(0);
+		addToVisitedURLset(rootLink.getLink());
+		processLink(rootLink);
 		
-		System.out.println("Hi" +CrawlerUtil.getDocument("http://mail-archives.apache.org/mod_mbox/maven-users/201507.mbox/ajax/%3CCAOe3-fZbQ4QeUNDkYyUUZ7bsoUFa_%2BEN9hxqDh%2BOzm6ybVecKw%40mail.gmail.com%3E").textNodes());
+	}
+	private void processLink(Link link){
 		
-		Document doc = CrawlerUtil.getDocument(Crawler.targetURL);
-		if(this.isDocEmail(doc)){
+		if(!isValidURL(link.getLink())) 
+			return;
 			
-		return;	
+		Document doc = CrawlerUtil.getDocument(link.getLink());
+		if(this.isDocEmail(doc)){
+			saveMail(doc);
+			addToVisitedURLset(link.getLink());
+			return;	
 		}
 		
 		Elements links = doc.select("a");//.attr("abs:href");
 		for(Element linkElement : links){
-			//System.out.println(e.attr("abs:href"));
 			String URLstr =linkElement.attr("abs:href");
 			if(!this.isValidURL(URLstr) && this.isVisitedURL(URLstr))
 				continue;
-			if(this.isDocEmail(doc)){
-				//loadMail(new File("crawler/").mkdir(),doc);
+			
+			Document elementDoc = CrawlerUtil.getDocument(URLstr);
+			if(this.isDocEmail(elementDoc)){
+				saveMail(doc);
+				addToVisitedURLset(URLstr);
+				continue;
 			}
-			this.addToVisitedURLset(URLstr);
+			
 		}
+	}
+	
+	private void saveMail( Document doc){
+		new MailLoaderImpl().saveMail(this.rootDir, doc.text());
 	}
 	
 	private void processDocument(String strURL){
-	
 		Document doc = CrawlerUtil.getDocument(Crawler.targetURL);
 		if(isDocEmail(doc)){
 			
+	//		this.addToVisitedURLset(URLstr);
 		}
 		Elements links = doc.select("a");//.attr("abs:href");
 		for(Element linkElement : links){
 			//System.out.println(e.attr("abs:href"));
 			String URLstr =linkElement.attr("abs:href");
-			if(!this.isValidURL(URLstr) && this.isVisitedURL(URLstr))
+			if(!this.isValidURL(URLstr) || this.isVisitedURL(URLstr))
 				continue;
 			
-			this.addToVisitedURLset(URLstr);
+			Document nestedDoc = CrawlerUtil.getDocument(URLstr);
+			if(isDocEmail(nestedDoc)){
+				saveMail(nestedDoc);
+				this.addToVisitedURLset(URLstr);
+				continue;
+			}
 			//isDocEmail(document)
 		}
-	}
-
-	private void saveMail(Document document){
-		
 	}
 	
 	private File getRootDir(){
@@ -74,7 +93,7 @@ public class GenericCrawlerImpl implements Crawler{
 	}
 	
 	private boolean isValidURL(String URL){
-		return URL.contains(Crawler.targetURL);
+		return URL.contains(rootLink.getLink());
 	}
 	
 	private boolean isDocEmail(Document document){
@@ -83,16 +102,15 @@ public class GenericCrawlerImpl implements Crawler{
 	
 	}
 	private boolean hasTag(Document document, String tagName){
-		
-		return (document.getElementsByTag("Form").size() > 0);
+		return (document.getElementsByTag(tagName).size() > 0);
 	}
 	
 	private boolean isVisitedURL(String URLstr){
 		return visitedURLSet.contains(URLstr);
 	}
 	
-	private void addToVisitedURLset(String URLstr){
-		//visitedURLSet.add(URLstr);
+	private boolean addToVisitedURLset(String URLstr){
+		 return this.visitedURLSet.add(URLstr);
 	}
 	
 }
