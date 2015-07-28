@@ -8,11 +8,9 @@ public class CrawlerMain {
 	public final static Logger logger = Logger.getLogger(CrawlerMain.class);
 	public static void main(String[] args) {
 		//CrawlerUtil.setLogLevel();
-		
-		/*Document doc = CrawlerUtil.getDocument("http://mail-archives.apache.org/mod_mbox/maven-users/201507.mbox/%3CCAOe3-fZbQ4QeUNDkYyUUZ7bsoUFa_+EN9hxqDh+Ozm6ybVecKw@mail.gmail.com%3E");
-		System.out.println("doc"+"IS true : "+(doc.text().contains("form")));
-		*/
-		stratCrawler();
+		//stratCrawler();
+		Crawler crawler = new GenericCrawlerImpl();
+		crawler.executeCrawler();
 	}
 	public static void stratCrawler(){
 		logger.debug("Crawler manin method execution start");

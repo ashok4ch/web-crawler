@@ -2,115 +2,61 @@ package com.imaginea;
 
 import java.io.File;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+import org.apache.log4j.Logger;
 
 public class GenericCrawlerImpl implements Crawler{
-	private Set <String>visitedURLSet = null;
-	private File rootDir = null;
-//	private String RootURL=null;
-	private Link rootLink=null;
-	public GenericCrawlerImpl(){
-		this.visitedURLSet  = new HashSet<String>();
-		this.rootDir = new File(Crawler.targetRootDIRPath);
-		this.rootDir.mkdirs();
-		this.rootLink = new Link();
+	private static final Logger logger= Logger.getLogger(GenericCrawlerImpl.class);
+	private static final int MAX_PAGES_TO_SEARCH = 5000;
+	private Set<String> urlsVisited = new HashSet<String>();
+	private List<String> urlsToVisit = new LinkedList<String>();
+	public static File rootDir = new File(Crawler.targetRootDIRPath);
+	static{
+			rootDir.mkdirs();
 	}
-/*	public static void main(String[] args) {
-		new GenericCrawlerImpl().executeCrawler();
-	}
-*/	
+	
 	public void executeCrawler(){
-		//System.out.println("Hi" +CrawlerUtil.getDocument("http://mail-archives.apache.org/mod_mbox/maven-users/201507.mbox/ajax/%3CCAOe3-fZbQ4QeUNDkYyUUZ7bsoUFa_%2BEN9hxqDh%2BOzm6ybVecKw%40mail.gmail.com%3E").textNodes());
-		rootLink.setParent(false);
-		rootLink.setLink(Crawler.targetURL);
-		rootLink.setParentLink("");
-		rootLink.setLevel(0);
-		addToVisitedURLset(rootLink.getLink());
-		processLink(rootLink);
-		
+	
+		processURL(Crawler.targetURL);
 	}
-	private void processLink(Link link){
-		
-		if(!isValidURL(link.getLink())) 
-			return;
-			
-		Document doc = CrawlerUtil.getDocument(link.getLink());
-		if(this.isDocEmail(doc)){
-			saveMail(doc);
-			addToVisitedURLset(link.getLink());
-			return;	
-		}
-		
-		Elements links = doc.select("a");//.attr("abs:href");
-		for(Element linkElement : links){
-			String URLstr =linkElement.attr("abs:href");
-			if(!this.isValidURL(URLstr) && this.isVisitedURL(URLstr))
-				continue;
-			
-			Document elementDoc = CrawlerUtil.getDocument(URLstr);
-			if(this.isDocEmail(elementDoc)){
-				saveMail(doc);
-				addToVisitedURLset(URLstr);
-				continue;
-			}
-			
-		}
+	private void processURL(String url){
+
+	      while(this.urlsVisited.size() < MAX_PAGES_TO_SEARCH)
+	      {
+	          String currentUrl;
+	          CrawlerLeg leg = new CrawlerLeg();
+	          if(this.urlsToVisit.isEmpty()){
+	              currentUrl = url;
+	              this.urlsVisited.add(url);
+	          }else{
+	              currentUrl = this.nextUrl();
+	          }
+	          leg.crawl(currentUrl); // Lots of stuff happening here. Look at the crawl method in
+	          boolean success = leg.checkingForMail();
+	          if(success){
+	        	  logger.info("the following url page was mail URL: "+currentUrl); 
+	          }
+	          
+	          if(!leg.getLinks().isEmpty())
+	        	  this.urlsToVisit.addAll(leg.getLinks());
+	      }
+	      logger.debug("\n**Done** Visited " + this.urlsVisited.size() + " web page(s)");
 	}
 	
-	private void saveMail( Document doc){
-		new MailLoaderImpl().saveMail(this.rootDir, doc.text());
-	}
-	
-	private void processDocument(String strURL){
-		Document doc = CrawlerUtil.getDocument(Crawler.targetURL);
-		if(isDocEmail(doc)){
-			
-	//		this.addToVisitedURLset(URLstr);
-		}
-		Elements links = doc.select("a");//.attr("abs:href");
-		for(Element linkElement : links){
-			//System.out.println(e.attr("abs:href"));
-			String URLstr =linkElement.attr("abs:href");
-			if(!this.isValidURL(URLstr) || this.isVisitedURL(URLstr))
-				continue;
-			
-			Document nestedDoc = CrawlerUtil.getDocument(URLstr);
-			if(isDocEmail(nestedDoc)){
-				saveMail(nestedDoc);
-				this.addToVisitedURLset(URLstr);
-				continue;
-			}
-			//isDocEmail(document)
-		}
-	}
-	
-	private File getRootDir(){
-		return this.rootDir;
-	}
-	
-	private boolean isValidURL(String URL){
-		return URL.contains(rootLink.getLink());
-	}
-	
-	private boolean isDocEmail(Document document){
-		String text= document.text();
-		return (hasTag(document,"Form") && hasTag(document,"subject") && hasTag(document,"mail"))||(text.contains("Form") && text.contains("subject") ) ? true: false;
-	
-	}
-	private boolean hasTag(Document document, String tagName){
-		return (document.getElementsByTag(tagName).size() > 0);
-	}
-	
-	private boolean isVisitedURL(String URLstr){
-		return visitedURLSet.contains(URLstr);
-	}
-	
-	private boolean addToVisitedURLset(String URLstr){
-		 return this.visitedURLSet.add(URLstr);
-	}
+	private String nextUrl()
+	  {
+	      String nextUrl;
+	      do
+	      {
+	          nextUrl = this.urlsToVisit.remove(0);
+	      } while(this.urlsVisited.contains(nextUrl));
+	      this.urlsVisited.add(nextUrl);
+	      return nextUrl;
+	  }
 	
 }
+
+
