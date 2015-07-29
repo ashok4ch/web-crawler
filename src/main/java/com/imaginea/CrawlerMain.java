@@ -7,12 +7,12 @@ import org.apache.log4j.Logger;
 public class CrawlerMain {
 	public final static Logger logger = Logger.getLogger(CrawlerMain.class);
 	public static void main(String[] args) {
-		//CrawlerUtil.setLogLevel();
-		//stratCrawler();
 		Crawler crawler = new GenericCrawlerImpl();
 		crawler.executeCrawler();
-	}
-	public static void stratCrawler(){
+}
+	
+	
+public static void stratCrawler(){
 		logger.debug("Crawler manin method execution start");
 		Scanner scan = new Scanner(System.in);
 	    System.out.println("Enter Input Year In YYYY formate: ");

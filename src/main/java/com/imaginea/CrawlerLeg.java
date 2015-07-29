@@ -20,11 +20,12 @@ public class CrawlerLeg {
     private static final String USER_AGENT ="Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/13.0.782.112 Safari/535.1";
     private List<String> links = new LinkedList<String>();
     private Document htmlDocument;
+    private static  String criteriaString="2014";// we can change the criteria string/ we can read from property file .
 
 
     /**
      * This performs all the work. It makes an HTTP request, checks the response, and then gathers
-     * up all the links on the page. Perform a searchForWord after the successful crawl
+     * up all the links on the page based on whether page is mail or not.Perform a mail validation after the successful page load.
      * 
      * @param url
      *            - The URL to visit
@@ -41,16 +42,20 @@ public class CrawlerLeg {
             if(connection.response().statusCode() == 200) // 200 is the HTTP OK status code
                                                           // indicating that everything is great.
             {
-                System.out.println("\n**Visiting** Received web page at " + url);
+               logger.debug("\n**Visiting** Received web page at " + url);
             }
             
-            Elements linksOnPage = htmlDocument.select("a[href]");
-            System.out.println("Found (" + linksOnPage.size() + ") links");
-            for(Element link : linksOnPage)
-            {
-            	if(link.absUrl("href").contains(Crawler.targetURL))
-            		this.links.add(link.absUrl("href"));
+            if(!checkDoesItMail()){
+	            Elements linksOnPage = htmlDocument.select("a[href]");
+	            logger.debug("Found (" + linksOnPage.size() + ") links");
+	            for(Element link : linksOnPage)
+	            {
+	            	if(isValidLink(link.absUrl("href")))//link.absUrl("href").contains(Crawler.targetURL))
+	            		this.links.add(link.absUrl("href"));
+	            }
+        	
             }
+            
             return true;
         }
         catch(IOException ioe)
@@ -67,7 +72,7 @@ public class CrawlerLeg {
      * 
      * @return whether or not the current document was mail.
      */
-    public boolean checkingForMail()
+    public boolean checkDoesItMail()
     {
 
     	if(isDocEmail()){
@@ -102,6 +107,9 @@ public class CrawlerLeg {
     private boolean hasTag(Document document, String tagName){
 		return (document.getElementsByTag(tagName).size() > 0);
 	}
-
+    
+    private boolean isValidLink(String urlLink){
+    	return (urlLink.contains(criteriaString) && urlLink.contains(Crawler.targetURL));
+    }
 
 }

@@ -10,7 +10,6 @@ import org.apache.log4j.Logger;
 
 public class GenericCrawlerImpl implements Crawler{
 	private static final Logger logger= Logger.getLogger(GenericCrawlerImpl.class);
-	private static final int MAX_PAGES_TO_SEARCH = 5000;
 	private Set<String> urlsVisited = new HashSet<String>();
 	private List<String> urlsToVisit = new LinkedList<String>();
 	public static File rootDir = new File(Crawler.targetRootDIRPath);
@@ -24,7 +23,7 @@ public class GenericCrawlerImpl implements Crawler{
 	}
 	private void processURL(String url){
 
-	      while(this.urlsVisited.size() < MAX_PAGES_TO_SEARCH)
+	      while(true)
 	      {
 	          String currentUrl;
 	          CrawlerLeg leg = new CrawlerLeg();
@@ -32,16 +31,20 @@ public class GenericCrawlerImpl implements Crawler{
 	              currentUrl = url;
 	              this.urlsVisited.add(url);
 	          }else{
-	              currentUrl = this.nextUrl();
+	        	 String nextUrl=this.nextUrl();
+	             if("exit".equals(nextUrl)){
+	            	 logger.info("Urls to visit list is empty so application is sutdowning.");
+			    	 break;
+	             }
+	             currentUrl = nextUrl;
 	          }
-	          leg.crawl(currentUrl); // Lots of stuff happening here. Look at the crawl method in
-	          boolean success = leg.checkingForMail();
-	          if(success){
-	        	  logger.info("the following url page was mail URL: "+currentUrl); 
-	          }
-	          
-	          if(!leg.getLinks().isEmpty())
+	          leg.crawl(currentUrl); // Lots of stuff(loading links and validating document whether is it email if yes saving it else loading all it's links ) happening here. Look at the crawl method in
+	          if(!leg.getLinks().isEmpty()){
 	        	  this.urlsToVisit.addAll(leg.getLinks());
+	        	  logger.info(" this.urlsToVisit size is : "+ this.urlsToVisit.size()+"::::"+leg.getLinks().size());
+	          }
+	          if(this.urlsToVisit.isEmpty())
+	        	  break;
 	      }
 	      logger.debug("\n**Done** Visited " + this.urlsVisited.size() + " web page(s)");
 	}
@@ -51,8 +54,12 @@ public class GenericCrawlerImpl implements Crawler{
 	      String nextUrl;
 	      do
 	      {
-	          nextUrl = this.urlsToVisit.remove(0);
-	      } while(this.urlsVisited.contains(nextUrl));
+		       if(this.urlsToVisit.isEmpty()){
+		    	   return "exit";
+		       }
+		       nextUrl = this.urlsToVisit.remove(0);
+		       
+	    	} while(this.urlsVisited.contains(nextUrl));
 	      this.urlsVisited.add(nextUrl);
 	      return nextUrl;
 	  }
