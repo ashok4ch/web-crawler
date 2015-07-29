@@ -39,28 +39,24 @@ public class CrawlerLeg {
             Connection connection = Jsoup.connect(url).userAgent(USER_AGENT);
             Document htmlDocument = connection.get();
             this.htmlDocument = htmlDocument;
-            if(connection.response().statusCode() == 200) // 200 is the HTTP OK status code
-                                                          // indicating that everything is great.
-            {
+            // 200 is the HTTP OK status code indicating that request was successfully received, understood, and accepted .
+            if(connection.response().statusCode() == 200){
                logger.debug("\n**Visiting** Received web page at " + url);
             }
             
             if(!checkDoesItMail()){
 	            Elements linksOnPage = htmlDocument.select("a[href]");
 	            logger.debug("Found (" + linksOnPage.size() + ") links");
-	            for(Element link : linksOnPage)
-	            {
-	            	if(isValidLink(link.absUrl("href")))//link.absUrl("href").contains(Crawler.targetURL))
+	            for(Element link : linksOnPage){
+	            	if(isValidLink(link.absUrl("href")))
 	            		this.links.add(link.absUrl("href"));
 	            }
-        	
-            }
-            
+        	}
             return true;
         }
         catch(IOException ioe)
         {
-            // We were not successful in our HTTP request
+            logger.fatal("HTTP request not successful, more descritpion : "+ ioe.getMessage());
             return false;
         }
     }
