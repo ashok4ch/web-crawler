@@ -61,7 +61,7 @@ public class CrawlerImpl implements Crawler{
 	}
 	public void createDirs(){
 		logger.debug("Method createDirs() started to create Root directory ");
-		this.rootDir=new File(Crawler.targetRootDIRPath+File.separator+inputYear);
+		this.rootDir=new File(Crawler.targetRootDIRPath+File.separator+"Normal_Crawler"+File.separator+inputYear);
 			this.getRootDir().delete();
 			//this.getRootDir().deleteOnExit();
 		this.getRootDir().mkdirs();

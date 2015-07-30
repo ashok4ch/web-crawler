@@ -12,15 +12,24 @@ public class GenericCrawlerImpl implements Crawler{
 	private static final Logger logger= Logger.getLogger(GenericCrawlerImpl.class);
 	private Set<String> urlsVisited = new HashSet<String>();
 	private List<String> urlsToVisit = new LinkedList<String>();
-	public static File rootDir = new File(Crawler.targetRootDIRPath);
+	public static File rootDir = new File(Crawler.targetRootDIRPath+File.separator+"Generic_Crawler");
+	public static String rootUrl=null;
 	static{
 			rootDir.mkdirs();
+	}
+	public GenericCrawlerImpl(){
+		rootUrl= Crawler.targetURL;
+	}
+	
+	public GenericCrawlerImpl(String url){
+		rootUrl=url;	
 	}
 	
 	public void executeCrawler(){
 	
-		processURL(Crawler.targetURL);
+		processURL(rootUrl);
 	}
+	
 	private void processURL(String url){
 
 	      while(true)

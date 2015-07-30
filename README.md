@@ -1,6 +1,6 @@
 # web-crawler
 simple crawler to crawl and download all mails for specified year from url:http://mail-archives.apache.org/mod_mbox/maven-users/.
-The project must have a build system and the build system should create a jar with a defined application entry point (java -jar crawler.jar [opts] should work, assuming crawler.jar was the jar created by the build system)
+The project must have a build system and the build system should create a jar with a defined application entry point (java -jar crawler-jar-with-dependencies.jar [opts] should work, assuming crawler.jar was the jar created by the build system)
 
 Tools:
 
