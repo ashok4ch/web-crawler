@@ -76,7 +76,7 @@ public class CrawlerLeg {
 						: false;
 	}
 
-	public void saveMail(Document doc) {
+	public boolean saveMail(Document doc) {
 		/*
 		 * new MailLoaderImpl().saveMail(new File(GenericCrawlerImpl.rootDir,
 		 * doc.text().substring(0, 100).replaceAll("[-+.^:,()?\\//*\"<>|=]", "")
@@ -89,6 +89,7 @@ public class CrawlerLeg {
 		MailDao mailDao = new MailDaoImpl();
 		mailDao.saveMail(mail);
 
+		return true;
 	}
 
 	public boolean hasTag(Document document, String tagName) {

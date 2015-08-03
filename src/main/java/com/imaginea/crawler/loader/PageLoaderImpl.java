@@ -6,13 +6,13 @@ package com.imaginea.crawler.loader;
 import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import org.apache.log4j.Logger;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.imaginea.crawler.dao.Mail;
+import com.imaginea.crawler.util.CrawlerUtil;
 
 /**
  * @author ashokh
@@ -43,7 +43,7 @@ public class PageLoaderImpl implements PageLoader {
 		return true;
 	}
 
-	public void loadmonthlyMails(String monthLink, String monthName) {
+	public boolean loadmonthlyMails(String monthLink, String monthName) {
 		logger.debug("loadmonthyMails() method execution started for the month" + monthName);
 		/*
 		 * File monthDir = new File(this.getRootDir(), monthName);
@@ -54,20 +54,22 @@ public class PageLoaderImpl implements PageLoader {
 
 		// if the month has only one page below if block execute.
 		if (noOfPage <= 0) {
-			ProcessPage(monthDoc, monthName);
-			return;
+			processPage(monthDoc, monthName);
+			return true;
 		}
 		// To handle the multiple pages of a month mails
 		for (int j = 0; j <= noOfPage; j++) {
 			StringBuilder PageLink = new StringBuilder(monthLink).append("?").append(j);
 			Document pageDoc = DocumentLoader.getDocument(PageLink.toString());
-			ProcessPage(pageDoc, monthName);
+			processPage(pageDoc, monthName);
 		}
 		logger.debug("loadmonthyMails() method execution has ended for the month" + monthName);
+		return true;
 	}
 
-	private void ProcessPage(Document pageDoc, String MonthName) {
-		ExecutorService executor = Executors.newFixedThreadPool(20);
+	public boolean processPage(Document pageDoc, String MonthName) {
+		int poolsize = Integer.parseInt((String) CrawlerUtil.PROPERTIES.get("crawler.threadpoolsize"));
+		ExecutorService executor = Executors.newFixedThreadPool(poolsize);
 		Elements monthlinks = pageDoc.getElementById("msglist").getElementsByTag("tbody").first()
 				.getElementsByTag("tr");
 		for (int i = 0; i < monthlinks.size(); i++) {
@@ -82,13 +84,13 @@ public class PageLoaderImpl implements PageLoader {
 			mail.setMsgName(msgfileName);
 			msgLink = msgLink.replaceFirst(".mbox/%", ".mbox/raw/%");
 			mail.setMsgLink(msgLink);
-			// mail.setFileDirectory(dir);
 			mail.setDirName(MonthName);
 			mail.setDocument(DocumentLoader.getDocument(msgLink));
 			MailLoadThread mailLoader = new MailLoadThread(mail);
 			executor.execute(mailLoader);
 		}
 		executor.shutdown();
+		return true;
 	}
 
 }
