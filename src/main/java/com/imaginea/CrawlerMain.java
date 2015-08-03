@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import com.imaginea.crawler.Crawler;
 import com.imaginea.crawler.CrawlerImpl;
 import com.imaginea.crawler.GenericCrawlerImpl;
+import com.imaginea.crawler.util.CrawlerUtil;
 
 public class CrawlerMain {
 	public final static Logger logger = Logger.getLogger(CrawlerMain.class);
@@ -47,8 +48,9 @@ public class CrawlerMain {
 			}
 
 		}
-		System.out.println("The mail(s) down loaded in to following folder " + Crawler.TARGET_ROOT_DIR_PATH);
-		// long startTime= System.currentTimeMillis();
+		logger.info("The mail(s) down loaded in to following folder " + CrawlerUtil.getRootDirPath()); // long
+																										// startTime=
+																										// System.currentTimeMillis();
 		scan.close();
 	}
 }

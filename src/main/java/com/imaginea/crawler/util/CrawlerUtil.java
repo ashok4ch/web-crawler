@@ -16,22 +16,25 @@ public class CrawlerUtil {
 	// normal web browser.
 	private static Logger logger = Logger.getLogger(CrawlerUtil.class);
 	private static Scanner scan = new Scanner(System.in);
-	public static Properties PROPERTIES = new Properties();
+	public static final Properties PROPERTIES = new Properties();
 
 	static {
 		try {
 			PROPERTIES.load(ClassLoader.class.getResourceAsStream("/crawler.properties"));
 		} catch (FileNotFoundException fne) {
-			// TODO Auto-generated catch block
 			fne.printStackTrace();
+			logger.fatal(fne.getMessage());
 		} catch (IOException ioe) {
-			// TODO: handle exception
-			ioe.printStackTrace();
+			logger.fatal(ioe.getMessage());
 		}
 	}
 
 	public static String getUrl() {
 		return PROPERTIES.getProperty("crawler.rooturl");
+	}
+	
+	public static String getRootDirPath() {
+		return CrawlerUtil.PROPERTIES.getProperty("crawler.rootdir");
 	}
 
 	public static File getRootDir(String dirName) {
