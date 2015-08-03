@@ -11,13 +11,14 @@ import com.imaginea.crawler.loader.CrawlerLeg;
 import com.imaginea.crawler.util.CrawlerUtil;
 
 public class GenericCrawlerImpl implements Crawler {
-	private static final String EXIT="exit";
 	private static Logger logger = Logger.getLogger(GenericCrawlerImpl.class);
 	private Set<String> urlsVisited = new HashSet<String>();
 	private List<String> urlsToVisit = new LinkedList<String>();
-	public static String rootUrl = null;
+	public static String rootUrl;
+	private static final String EXIT = "exit";
+
 	public GenericCrawlerImpl() {
-		rootUrl = CrawlerUtil.getUrl();//Crawler.TARGET_URL;
+		rootUrl = CrawlerUtil.getUrl();// Crawler.TARGET_URL;
 	}
 
 	public GenericCrawlerImpl(String url) {

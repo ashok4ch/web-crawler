@@ -45,17 +45,17 @@ public class CrawlerLeg {
 
 	}
 
-	public boolean loadLinks(){
+	public boolean loadLinks() {
 		Elements linksOnPage = htmlDocument.select("a[href]");
 		logger.debug("Found (" + linksOnPage.size() + ") links");
 		for (Element link : linksOnPage) {
 			if (isValidLink(link.absUrl("href")))
 				this.links.add(link.absUrl("href"));
 		}
-		
+
 		return true;
 	}
-	
+
 	public List<String> getLinks() {
 		return this.links;
 	}
@@ -77,16 +77,18 @@ public class CrawlerLeg {
 	}
 
 	public void saveMail(Document doc) {
-	/*	new MailLoaderImpl().saveMail(new File(GenericCrawlerImpl.rootDir,
-				doc.text().substring(0, 100).replaceAll("[-+.^:,()?\\//*\"<>|=]", "") + ".txt"), doc.text());
-	*/
-		Mail mail=new Mail();
+		/*
+		 * new MailLoaderImpl().saveMail(new File(GenericCrawlerImpl.rootDir,
+		 * doc.text().substring(0, 100).replaceAll("[-+.^:,()?\\//*\"<>|=]", "")
+		 * + ".txt"), doc.text());
+		 */
+		Mail mail = new Mail();
 		mail.setDocument(doc);
 		mail.setMsgName(doc.text().substring(0, 100));
 		mail.setDirName("Generic_crawler");
-		MailDao mailDao= new MailDaoImpl();
+		MailDao mailDao = new MailDaoImpl();
 		mailDao.saveMail(mail);
-		
+
 	}
 
 	public boolean hasTag(Document document, String tagName) {

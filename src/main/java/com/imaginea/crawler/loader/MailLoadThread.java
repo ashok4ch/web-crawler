@@ -14,10 +14,11 @@ public class MailLoadThread implements Runnable {
 	@Override
 	public void run() {
 
-		/*MailLoader mailloader = new MailLoaderImpl();
-		mailloader.processMailLoader(this.mailObject);
-*/
-		MailDao mailDao= new MailDaoImpl();
+		/*
+		 * MailLoader mailloader = new MailLoaderImpl();
+		 * mailloader.processMailLoader(this.mailObject);
+		 */
+		MailDao mailDao = new MailDaoImpl();
 		mailDao.saveMail(this.mailObject);
 	}
 

@@ -21,7 +21,7 @@ import com.imaginea.crawler.dao.Mail;
 public class PageLoaderImpl implements PageLoader {
 	private static Logger logger = Logger.getLogger(PageLoaderImpl.class);
 
-	public boolean loadLinks(Document document,String Criteria) {
+	public boolean loadLinks(Document document, String Criteria) {
 		logger.debug("loadLinks execution start");
 		Elements elements = document.getElementsByClass("year");
 		for (Element element : elements) {
@@ -34,7 +34,7 @@ public class PageLoaderImpl implements PageLoader {
 					logger.debug("Links of " + monthName + " month load start ");
 					if (monthLink.isEmpty())
 						continue;
-					loadmonthlyMails(monthLink, Criteria+File.separator+monthName);
+					loadmonthlyMails(monthLink, Criteria + File.separator + monthName);
 				}
 				break;
 			}
@@ -45,8 +45,10 @@ public class PageLoaderImpl implements PageLoader {
 
 	public void loadmonthlyMails(String monthLink, String monthName) {
 		logger.debug("loadmonthyMails() method execution started for the month" + monthName);
-		/*File monthDir = new File(this.getRootDir(), monthName);
-		monthDir.mkdirs();*/
+		/*
+		 * File monthDir = new File(this.getRootDir(), monthName);
+		 * monthDir.mkdirs();
+		 */
 		Document monthDoc = DocumentLoader.getDocument(monthLink);
 		int noOfPage = (monthDoc.getElementsByClass("pages").select("a").size() - 1);
 
@@ -80,7 +82,7 @@ public class PageLoaderImpl implements PageLoader {
 			mail.setMsgName(msgfileName);
 			msgLink = msgLink.replaceFirst(".mbox/%", ".mbox/raw/%");
 			mail.setMsgLink(msgLink);
-			//mail.setFileDirectory(dir);
+			// mail.setFileDirectory(dir);
 			mail.setDirName(MonthName);
 			mail.setDocument(DocumentLoader.getDocument(msgLink));
 			MailLoadThread mailLoader = new MailLoadThread(mail);
@@ -89,4 +91,4 @@ public class PageLoaderImpl implements PageLoader {
 		executor.shutdown();
 	}
 
-	}
+}

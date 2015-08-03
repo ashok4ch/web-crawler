@@ -10,12 +10,12 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 public class DocumentLoader {
-	
-	private static Logger logger= Logger.getLogger(DocumentLoader.class);
+
+	private static Logger logger = Logger.getLogger(DocumentLoader.class);
 	private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/13.0.782.112 Safari/535.1";
 
-	public static Document getDocument(String url){
-		Document doc=null;
+	public static Document getDocument(String url) {
+		Document doc = null;
 		logger.debug("getDocument() execution has started for rul : " + url);
 		try {
 			Connection connection = Jsoup.connect(url).userAgent(USER_AGENT);

@@ -17,7 +17,7 @@ public class CrawlerImpl implements Crawler {
 	private Document document;
 	private int inputYear;
 	private String inputYearText;
-	
+
 	public int getInputYear() {
 		return inputYear;
 	}
@@ -34,7 +34,6 @@ public class CrawlerImpl implements Crawler {
 
 	public boolean isYearValid(String inputYear) {
 		logger.debug("isInputYearValid execution start");
-		//String textValue = "Year " + inputYear;
 		return this.document.text().contains(inputYear);
 
 	}

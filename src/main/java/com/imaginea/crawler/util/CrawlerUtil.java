@@ -11,8 +11,6 @@ import org.apache.log4j.Category;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import com.imaginea.crawler.Crawler;
-
 public class CrawlerUtil {
 	// We'll use a fake USER_AGENT so the web server thinks the robot is a
 	// normal web browser.
@@ -42,7 +40,7 @@ public class CrawlerUtil {
 			fullPath.append(File.separator).append(dirName);
 		}
 		logger.info("getRootDir has started path :" + fullPath.toString());
-		
+
 		File file = new File(fullPath.toString());
 		file.mkdirs();
 		return file;

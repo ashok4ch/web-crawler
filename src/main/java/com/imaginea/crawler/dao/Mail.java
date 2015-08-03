@@ -7,57 +7,69 @@ import org.jsoup.nodes.Document;
  *
  */
 public class Mail {
-	private String msgName = null;
-	private String msgLink = null;
-	private String dirName=null;
-	private Document document=null;
+	private String msgName;
+	private String msgLink;
+	private String dirName;
+	private Document document;
+
 	/**
 	 * @return the document
 	 */
 	public Document getDocument() {
 		return document;
 	}
+
 	/**
-	 * @param document the document to set
+	 * @param document
+	 *            the document to set
 	 */
 	public void setDocument(Document document) {
 		this.document = document;
 	}
+
 	/**
 	 * @return the inputyear
 	 */
 	public String getDirName() {
 		return dirName;
 	}
+
 	/**
-	 * @param inputyear the inputyear to set
+	 * @param inputyear
+	 *            the inputyear to set
 	 */
 	public void setDirName(String inputyear) {
 		this.dirName = inputyear;
 	}
-/**
+
+	/**
 	 * @return the msgName
 	 */
 	public String getMsgName() {
 		return msgName;
 	}
+
 	/**
-	 * @param msgName the msgName to set
+	 * @param msgName
+	 *            the msgName to set
 	 */
 	public void setMsgName(String msgName) {
 		this.msgName = msgName;
 	}
+
 	/**
 	 * @return the msgLink
 	 */
 	public String getMsgLink() {
 		return msgLink;
 	}
+
 	/**
-	 * @param msgLink the msgLink to set
+	 * @param msgLink
+	 *            the msgLink to set
 	 */
 	public void setMsgLink(String msgLink) {
 		this.msgLink = msgLink;
 	}
-	
+
 }

@@ -11,8 +11,9 @@ import org.jsoup.nodes.Document;
 
 import com.imaginea.crawler.util.CrawlerUtil;
 
-public class MailDaoImpl implements MailDao{
+public class MailDaoImpl implements MailDao {
 	public static Logger logger = Logger.getLogger(MailDaoImpl.class);
+
 	@Override
 	public boolean saveMail(Mail mail) {
 		boolean result = true;
@@ -40,6 +41,7 @@ public class MailDaoImpl implements MailDao{
 
 		return result;
 	}
+
 	@Override
 	public void saveMail(List<Mail> mailList) {
 
