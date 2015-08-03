@@ -1,8 +1,6 @@
 package com.imaginea;
 
 import java.util.Scanner;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 
@@ -16,8 +14,6 @@ public class CrawlerMain {
 
 	public static void main(String[] args) {
 		stratCrawler();
-		// File file= CrawlerUtil.getRootDir("ashok");
-		// System.out.println("file is "+ file.getAbsolutePath());
 	}
 
 	public static void stratCrawler() {

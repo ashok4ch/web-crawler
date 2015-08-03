@@ -32,7 +32,7 @@ public class CrawlerUtil {
 	public static String getUrl() {
 		return PROPERTIES.getProperty("crawler.rooturl");
 	}
-	
+
 	public static String getRootDirPath() {
 		return CrawlerUtil.PROPERTIES.getProperty("crawler.rootdir");
 	}
