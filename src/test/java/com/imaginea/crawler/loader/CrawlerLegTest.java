@@ -7,8 +7,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.imaginea.crawler.util.CrawlerUtil;
-
 public class CrawlerLegTest {
 	private CrawlerLeg cLeg;
 	private String url;
@@ -17,23 +15,15 @@ public class CrawlerLegTest {
 	@Before
 	public void setUp() throws Exception {
 		cLeg = new CrawlerLeg();
-		url = CrawlerUtil.getUrl();
-		// url=
-		// "http://mail-archives.apache.org/mod_mbox/maven-users/201507.mbox/raw/%3CCAOe3-fZbQ4QeUNDkYyUUZ7bsoUFa_%2BEN9hxqDh%2BOzm6ybVecKw%40mail.gmail.com%3E";
-		doc = DocumentLoader.getDocument(
-				"http://mail-archives.apache.org/mod_mbox/maven-users/201507.mbox/raw/%3CCAOe3-fZbQ4QeUNDkYyUUZ7bsoUFa_%2BEN9hxqDh%2BOzm6ybVecKw%40mail.gmail.com%3E");
+		// url = CrawlerUtil.getUrl();
+		url = "http://mail-archives.apache.org/mod_mbox/maven-users/201507.mbox/raw/%3CCAOe3-fZbQ4QeUNDkYyUUZ7bsoUFa_%2BEN9hxqDh%2BOzm6ybVecKw%40mail.gmail.com%3E";
+		doc = DocumentLoader.getDocument(url);
 	}
 
 	@After
 	public void tearDown() throws Exception {
 		cLeg = null;
 		url = null;
-	}
-
-	@Test
-	public final void testCrawl() {
-		assertEquals("The given url is not valid", true, cLeg.crawl(url));
-
 	}
 
 	@Test

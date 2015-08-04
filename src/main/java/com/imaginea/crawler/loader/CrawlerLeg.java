@@ -2,6 +2,7 @@ package com.imaginea.crawler.loader;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import org.apache.log4j.Logger;
 import org.jsoup.nodes.Document;
@@ -17,10 +18,11 @@ public class CrawlerLeg {
 
 	private static final Logger logger = Logger.getLogger(CrawlerLeg.class);
 	private List<String> links = new LinkedList<String>();
+	private ArrayBlockingQueue<String> bQueue;
 	private Document htmlDocument;
-	private static String criteriaString = "";// we can change the criteria
-												// string/ we can read from
-												// property file .
+	private static String criteriaString = "2014";// we can change the criteria
+													// string/ we can read from
+													// property file .
 
 	/**
 	 * This performs all the work. It makes an HTTP request, checks the
@@ -32,12 +34,26 @@ public class CrawlerLeg {
 	 *            - The URL to visit
 	 * @return whether or not the crawl was successful
 	 */
-	public boolean crawl(String url) {
+	public CrawlerLeg() {
+		super();
+	}
+
+	public CrawlerLeg(ArrayBlockingQueue<String> bQueue) {
+		super();
+		this.bQueue = bQueue;
+
+	}
+
+	public boolean crawlPS(String url) {
 		logger.debug("Crawl method has started");
 		this.htmlDocument = DocumentLoader.getDocument(url);
 
 		if (isMail()) {
-			saveMail(this.htmlDocument);
+			try {
+				bQueue.put(url);
+			} catch (InterruptedException ie) {
+				logger.fatal(ie.getMessage());
+			}
 		} else {
 			loadLinks();
 		}

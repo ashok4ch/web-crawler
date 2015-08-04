@@ -16,7 +16,6 @@ public class DocumentLoader {
 	private static Logger logger = Logger.getLogger(DocumentLoader.class);
 	public static Document getDocument(String url) {
 		Document doc = null;
-		logger.debug("getDocument() execution has started for rul : " + url);
 		try {
 			Connection connection = Jsoup.connect(url).userAgent(CrawlerUtil.PROPERTIES.getProperty("crawler.useragent"));
 			doc = connection.get();

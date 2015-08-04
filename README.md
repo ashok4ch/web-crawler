@@ -12,7 +12,8 @@ Tools:
 	 
 Iteration:
 
-Time: 1 week Deliverable: working crawler which can download all mails(Coding: 3 days, Testing:2day)
+Time: 1 week Deliverable: working crawler which can download all mails(Coding: 3 days, Testing:2day).
+
 Time: 2 week Deliverable: Generic crawler which can download all mails from specified url if it has any mails.
 
 Application input and output overview:
