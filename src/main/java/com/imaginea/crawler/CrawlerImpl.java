@@ -42,7 +42,7 @@ public class CrawlerImpl implements Crawler {
 		logger.debug("executeCrawler execution start");
 		if (this.isYearValid(this.inputYearText)) {
 			PageLoader pageLoader = new PageLoaderImpl();
-			pageLoader.loadLinks(this.document, inputYearText);
+			pageLoader.loadLinks(this.document, inputYear+"");
 		} else {
 			logger.fatal("Entered Input Year" + inputYear + " is not valid/has no emails Please enter valid :");
 			return;

@@ -51,4 +51,5 @@ public class CrawlerMain {
 																										// System.currentTimeMillis();
 		scan.close();
 	}
+
 }

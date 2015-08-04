@@ -21,22 +21,15 @@ import com.imaginea.crawler.util.CrawlerUtil;
 public class PageLoaderImpl implements PageLoader {
 	private static Logger logger = Logger.getLogger(PageLoaderImpl.class);
 
-	public boolean loadLinks(Document document, String Criteria) {
+	public boolean loadLinks(Document document, String criteria) {
 		logger.debug("loadLinks execution start");
-		Elements elements = document.getElementsByClass("year");
-		for (Element element : elements) {
-			if (element.getElementsByTag("thead").text().equals(Criteria)) {
-				Elements trs = element.getElementsByTag("tbody").first().getElementsByTag("tr");
-				for (Element trElement : trs) {
-					String monthName = trElement.getElementsByClass("date").first().text();
-					String monthLink = trElement.select("a").first().absUrl("href");
-					// Code to load the all mails links of respective month
-					logger.debug("Links of " + monthName + " month load start ");
-					if (monthLink.isEmpty())
-						continue;
-					loadmonthlyMails(monthLink, Criteria + File.separator + monthName);
-				}
-				break;
+		Elements elements = document.select("a[href]");
+		for (Element link : elements) {
+			String url = link.absUrl("href");
+			if (url.contains(criteria) && url.contains("thread")) {
+				int startpoint = url.indexOf(criteria);
+				String monthName = url.substring(startpoint, startpoint + 6);
+				loadmonthlyMails(url, criteria + File.separator + monthName);
 			}
 		}
 		logger.debug("loadLinks execution has end");
@@ -45,24 +38,16 @@ public class PageLoaderImpl implements PageLoader {
 
 	public boolean loadmonthlyMails(String monthLink, String monthName) {
 		logger.debug("loadmonthyMails() method execution started for the month" + monthName);
-		/*
-		 * File monthDir = new File(this.getRootDir(), monthName);
-		 * monthDir.mkdirs();
-		 */
 		Document monthDoc = DocumentLoader.getDocument(monthLink);
 		int noOfPage = (monthDoc.getElementsByClass("pages").select("a").size() - 1);
-
-		// if the month has only one page below if block execute.
-		if (noOfPage <= 0) {
-			processPage(monthDoc, monthName);
-			return true;
-		}
-		// To handle the multiple pages of a month mails
-		for (int j = 0; j <= noOfPage; j++) {
+		int j = 0;
+		do {
 			StringBuilder PageLink = new StringBuilder(monthLink).append("?").append(j);
 			Document pageDoc = DocumentLoader.getDocument(PageLink.toString());
 			processPage(pageDoc, monthName);
-		}
+			j++;
+		} while (j <= noOfPage);
+
 		logger.debug("loadmonthyMails() method execution has ended for the month" + monthName);
 		return true;
 	}
