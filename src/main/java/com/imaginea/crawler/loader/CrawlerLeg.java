@@ -103,7 +103,7 @@ public class CrawlerLeg {
 	}
 
 	public boolean isValidLink(String urlLink) {
-		return urlLink.contains(GenericCrawlerImpl.rootUrl)&& urlLink.contains("200406");
+		return urlLink.contains(GenericCrawlerImpl.rootUrl);
 	}
 
 }
