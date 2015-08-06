@@ -26,6 +26,17 @@ public class CrawlerImpl implements Crawler {
 		return inputYearText;
 	}
 
+	public CrawlerImpl() {
+		// this.inputYear = inputYear;
+		// this.inputYearText = "Year " + inputYear;
+		this.document = DocumentLoader.getDocument(CrawlerUtil.getUrl());
+	}
+
+	public void setInputCriteria(String Criteria) {
+		this.inputYear = Integer.parseInt(Criteria);
+		this.inputYearText = "Year " + Criteria;
+	}
+
 	public CrawlerImpl(int inputYear) {
 		this.inputYear = inputYear;
 		this.inputYearText = "Year " + inputYear;
@@ -42,7 +53,7 @@ public class CrawlerImpl implements Crawler {
 		logger.debug("executeCrawler execution start");
 		if (this.isYearValid(this.inputYearText)) {
 			PageLoader pageLoader = new PageLoaderImpl();
-			pageLoader.loadLinks(this.document, inputYear+"");
+			pageLoader.loadLinks(this.document, inputYear + "");
 		} else {
 			logger.fatal("Entered Input Year" + inputYear + " is not valid/has no emails Please enter valid :");
 			return;

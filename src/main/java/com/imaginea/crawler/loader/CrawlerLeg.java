@@ -18,11 +18,8 @@ public class CrawlerLeg {
 
 	private static final Logger logger = Logger.getLogger(CrawlerLeg.class);
 	private List<String> links = new LinkedList<String>();
-	private ArrayBlockingQueue<String> bQueue;
+	private ArrayBlockingQueue<String> mailUrlQueue;
 	private Document htmlDocument;
-	private static String criteriaString = "2014";// we can change the criteria
-													// string/ we can read from
-													// property file .
 
 	/**
 	 * This performs all the work. It makes an HTTP request, checks the
@@ -38,30 +35,29 @@ public class CrawlerLeg {
 		super();
 	}
 
-	public CrawlerLeg(ArrayBlockingQueue<String> bQueue) {
+	public CrawlerLeg(ArrayBlockingQueue<String> mailUrlQueue) {
 		super();
-		this.bQueue = bQueue;
-
+		this.mailUrlQueue = mailUrlQueue;
 	}
 
-	public boolean crawlPS(String url) {
+	public List<String> crawl(String url) {
 		logger.debug("Crawl method has started");
 		this.htmlDocument = DocumentLoader.getDocument(url);
 
 		if (isMail()) {
 			try {
-				bQueue.put(url);
+				mailUrlQueue.put(url);
 			} catch (InterruptedException ie) {
-				logger.fatal(ie.getMessage());
+				logger.fatal(ie);
 			}
 		} else {
 			loadLinks();
 		}
-		return true;
+		return getLinks();
 
 	}
 
-	public boolean loadLinks() {
+	public void loadLinks() {
 		Elements linksOnPage = htmlDocument.select("a[href]");
 		logger.debug("Found (" + linksOnPage.size() + ") links");
 		for (Element link : linksOnPage) {
@@ -69,7 +65,6 @@ public class CrawlerLeg {
 				this.links.add(link.absUrl("href"));
 		}
 
-		return true;
 	}
 
 	public List<String> getLinks() {
@@ -93,11 +88,6 @@ public class CrawlerLeg {
 	}
 
 	public boolean saveMail(Document doc) {
-		/*
-		 * new MailLoaderImpl().saveMail(new File(GenericCrawlerImpl.rootDir,
-		 * doc.text().substring(0, 100).replaceAll("[-+.^:,()?\\//*\"<>|=]", "")
-		 * + ".txt"), doc.text());
-		 */
 		Mail mail = new Mail();
 		mail.setDocument(doc);
 		mail.setMsgName(doc.text().substring(0, 100));
@@ -113,7 +103,7 @@ public class CrawlerLeg {
 	}
 
 	public boolean isValidLink(String urlLink) {
-		return (urlLink.contains(criteriaString) && urlLink.contains(GenericCrawlerImpl.rootUrl));
+		return urlLink.contains(GenericCrawlerImpl.rootUrl)&& urlLink.contains("200406");
 	}
 
 }

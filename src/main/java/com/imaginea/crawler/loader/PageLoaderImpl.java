@@ -60,7 +60,7 @@ public class PageLoaderImpl implements PageLoader {
 		for (int i = 0; i < monthlinks.size(); i++) {
 			String msgfileName = monthlinks.get(i).text(); // test for msg naem
 			if (msgfileName.length() > 150)
-				msgfileName = msgfileName.substring(0, 150) + "...";
+				msgfileName = msgfileName.substring(0, 100);
 			String msgLink = monthlinks.get(i).select("a").attr("abs:href");
 			if (msgLink.isEmpty()) {
 				continue;

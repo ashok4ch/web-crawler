@@ -1,12 +1,11 @@
-package com.imaginea.crawler;
+package com.imaginea.crawler.loader;
 
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.log4j.Logger;
-
-import com.imaginea.crawler.loader.CrawlerLeg;
 
 public class CrawlerProducer implements Runnable {
 	private static Logger logger = Logger.getLogger(CrawlerProducer.class);
@@ -42,9 +41,9 @@ public class CrawlerProducer implements Runnable {
 				currentUrl = nextUrl;
 			}
 			CrawlerLeg leg = new CrawlerLeg(mailUrlQueue);
-			leg.crawlPS(currentUrl);
-			if (!leg.getLinks().isEmpty()) {
-				this.urlsToVisit.addAll(leg.getLinks());
+			List<String> linksList = leg.crawl(currentUrl);
+			if (!linksList.isEmpty()) {
+				this.urlsToVisit.addAll(linksList);
 				logger.info(" this.urlsToVisit size is : " + this.urlsToVisit.size() + "::::" + leg.getLinks().size());
 			}
 

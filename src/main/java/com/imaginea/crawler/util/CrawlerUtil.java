@@ -17,6 +17,7 @@ public class CrawlerUtil {
 	private static Logger logger = Logger.getLogger(CrawlerUtil.class);
 	private static Scanner scan = new Scanner(System.in);
 	public static final Properties PROPERTIES = new Properties();
+	public static File rootDir;
 
 	static {
 		try {
@@ -38,15 +39,17 @@ public class CrawlerUtil {
 	}
 
 	public static File getRootDir(String dirName) {
-		StringBuilder fullPath = new StringBuilder(CrawlerUtil.PROPERTIES.getProperty("crawler.rootdir"));
-		if (dirName != null) {
-			fullPath.append(File.separator).append(dirName);
+		if(rootDir == null){
+			StringBuilder fullPath = new StringBuilder(CrawlerUtil.PROPERTIES.getProperty("crawler.rootdir"));
+			if (dirName != null) {
+				fullPath.append(File.separator).append(dirName);
+			}
+			logger.info("getRootDir has started path :" + fullPath.toString());
+			rootDir = new File(fullPath.toString());
+			rootDir.mkdirs();
 		}
-		logger.info("getRootDir has started path :" + fullPath.toString());
-
-		File file = new File(fullPath.toString());
-		file.mkdirs();
-		return file;
+		
+		return rootDir;
 	}
 
 	public static void setLogLevel() {
@@ -55,23 +58,23 @@ public class CrawlerUtil {
 		int level = scan.nextInt();
 		switch (level) {
 		case 1:
-			setLEvelToAllLoggers(Level.DEBUG);
+			setLevelToAllLoggers(Level.DEBUG);
 			break;
 		case 2:
-			setLEvelToAllLoggers(Level.INFO);
+			setLevelToAllLoggers(Level.INFO);
 			break;
 		case 3:
-			setLEvelToAllLoggers(Level.WARN);
+			setLevelToAllLoggers(Level.WARN);
 			break;
 		case 4:
-			setLEvelToAllLoggers(Level.ERROR);
+			setLevelToAllLoggers(Level.ERROR);
 			break;
 		case 5:
-			setLEvelToAllLoggers(Level.FATAL);
+			setLevelToAllLoggers(Level.FATAL);
 			break;
 
 		case 6:
-			setLEvelToAllLoggers(Level.OFF);
+			setLevelToAllLoggers(Level.OFF);
 			break;
 
 		default:
@@ -81,9 +84,10 @@ public class CrawlerUtil {
 		}
 	}
 
-	public static void setLEvelToAllLoggers(Level level) {
+	@SuppressWarnings("unchecked")
+	public static void setLevelToAllLoggers(Level level) {
 		Logger root = Logger.getRootLogger();
-		Enumeration allLoggers = root.getLoggerRepository().getCurrentCategories();
+		Enumeration<Category> allLoggers = root.getLoggerRepository().getCurrentCategories();
 		root.setLevel(level);
 		while (allLoggers.hasMoreElements()) {
 			Category tmpLogger = (Category) allLoggers.nextElement();

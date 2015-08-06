@@ -6,4 +6,5 @@ package com.imaginea.crawler;
  */
 public interface Crawler {
 	public void executeCrawler();
+	public void setInputCriteria(String inputCriteria);
 }

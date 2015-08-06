@@ -5,8 +5,8 @@ import java.util.Scanner;
 import org.apache.log4j.Logger;
 
 import com.imaginea.crawler.Crawler;
-import com.imaginea.crawler.CrawlerImpl;
-import com.imaginea.crawler.GenericCrawlerImpl;
+import com.imaginea.crawler.CrawlerFactory;
+import com.imaginea.crawler.CrawlerFactory.CrawlerType;
 import com.imaginea.crawler.util.CrawlerUtil;
 
 public class CrawlerMain {
@@ -24,31 +24,24 @@ public class CrawlerMain {
 			System.out.println("Enter Crawler type Normal(N/n) and Generic(G/g): ");
 			crawlerType = scan.next();
 		} while (!(crawlerType != null && ("n".equalsIgnoreCase(crawlerType) || "g".equalsIgnoreCase(crawlerType))));
-		String selType = ("n".equalsIgnoreCase(crawlerType)) ? "Normal Crawler" : "Generic Craler";
-		System.out.println("Crawler type is : " + selType);
-
+		CrawlerType crwType = ("n".equalsIgnoreCase(crawlerType)) ? CrawlerType.NORMAL : CrawlerType.GENERIC;
+		Crawler crawler;
 		if ("n".equalsIgnoreCase(crawlerType)) {
 			System.out.println("Enter Input Year In YYYY formate: ");
-			int inputValue = scan.nextInt();
-			Crawler crawler = new CrawlerImpl(inputValue);
-			crawler.executeCrawler();
-		}
-		if ("g".equalsIgnoreCase(crawlerType)) {
+			String inputValue = scan.next();
+			crawler = CrawlerFactory.getCrawler(inputValue, crwType);
+		} else {
 			System.out.println(
 					"Do you want run with default url : http://mail-archives.apache.org/mod_mbox/maven-users (Y/N) ?");
 			if ("n".equalsIgnoreCase(scan.next())) {
 				System.out.println("Please enter url  ?");
-				Crawler crawler = new GenericCrawlerImpl(scan.next());
-				crawler.executeCrawler();
+				crawler = CrawlerFactory.getCrawler(scan.next(), crwType);
 			} else {
-				Crawler crawler = new GenericCrawlerImpl();
-				crawler.executeCrawler();
+				crawler = CrawlerFactory.getCrawler(crwType);
 			}
-
 		}
+		crawler.executeCrawler();
 		logger.info("The mail(s) down loaded in to following folder " + CrawlerUtil.getRootDirPath()); // long
-																										// startTime=
-																										// System.currentTimeMillis();
 		scan.close();
 	}
 

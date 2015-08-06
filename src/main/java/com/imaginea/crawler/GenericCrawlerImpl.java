@@ -6,6 +6,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.log4j.Logger;
 
+import com.imaginea.crawler.loader.CrawlerProducer;
 import com.imaginea.crawler.util.CrawlerUtil;
 
 public class GenericCrawlerImpl implements Crawler {
@@ -29,10 +30,23 @@ public class GenericCrawlerImpl implements Crawler {
 
 	}
 
+	public void setInputCriteria(String inputCriteria) {
+		// this.rootUrl=inputCriteria;
+	}
+
 	private void processURL(String url) {
 		logger.info("processURL has started with url: " + url);
 		Thread cProducer = new Thread(new CrawlerProducer(urlsToVisit, mailUrlQueue, urlsVisited, url));
 		cProducer.start();
+
+		/*
+		 * ExecutorService executor = Executors.newFixedThreadPool(30); for(int
+		 * i=0; i<20; i++){ Thread cProducer = new Thread(new
+		 * CrawlerProducer(urlsToVisit, mailUrlQueue, urlsVisited, url)); Thread
+		 * cConsumer = new Thread(new CrawlerConsumer(mailUrlQueue,
+		 * urlsToVisit)); executor.execute(cProducer);
+		 * executor.execute(cConsumer); } executor.shutdown();
+		 */
 		Thread cConsumer = new Thread(new CrawlerConsumer(mailUrlQueue, urlsToVisit));
 		cConsumer.start();
 	}
