@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 
 public class CrawlerProducer implements Runnable {
 	private static Logger logger = Logger.getLogger(CrawlerProducer.class);
-	private static final String EXIT = "exit";
+	public static final String EXIT = "exit";
 	private CopyOnWriteArrayList<String> urlsToVisit;
 	private ArrayBlockingQueue<String> mailUrlQueue;
 	private ConcurrentSkipListSet<String> urlsVisited;
@@ -35,6 +35,7 @@ public class CrawlerProducer implements Runnable {
 			} else {
 				String nextUrl = this.nextUrl();
 				if (EXIT.equals(nextUrl)) {
+					setMailUrlQueue();
 					logger.info("Urls to visit list is empty so application is sutdowning.");
 					break;
 				}
@@ -47,8 +48,11 @@ public class CrawlerProducer implements Runnable {
 				logger.info(" this.urlsToVisit size is : " + this.urlsToVisit.size() + "::::" + leg.getLinks().size());
 			}
 
-			if (this.urlsToVisit.isEmpty())
+			if (this.urlsToVisit.isEmpty()) {
+				setMailUrlQueue();
 				break;
+			}
+
 		}
 		logger.debug("Thread CrawlerProducer run() method has ended");
 		logger.debug("\n**Done** Visited " + this.urlsVisited.size() + " web page(s)");
@@ -65,6 +69,15 @@ public class CrawlerProducer implements Runnable {
 		} while (this.urlsVisited.contains(nextUrl));
 		this.urlsVisited.add(nextUrl);
 		return nextUrl;
+	}
+
+	private void setMailUrlQueue() {
+		try {
+			this.mailUrlQueue.put(EXIT);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

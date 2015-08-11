@@ -13,6 +13,7 @@ import com.imaginea.crawler.GenericCrawlerImpl;
 import com.imaginea.crawler.dao.Mail;
 import com.imaginea.crawler.dao.MailDao;
 import com.imaginea.crawler.dao.MailDaoImpl;
+import com.imaginea.crawler.util.CrawlerUtil;
 
 public class CrawlerLeg {
 
@@ -58,6 +59,10 @@ public class CrawlerLeg {
 	}
 
 	public void loadLinks() {
+
+		if (htmlDocument == null)
+			return;
+
 		Elements linksOnPage = htmlDocument.select("a[href]");
 		logger.debug("Found (" + linksOnPage.size() + ") links");
 		for (Element link : linksOnPage) {
@@ -90,7 +95,8 @@ public class CrawlerLeg {
 	public boolean saveMail(Document doc) {
 		Mail mail = new Mail();
 		mail.setDocument(doc);
-		mail.setMsgName(doc.text().substring(0, 100));
+		int msgNameEndPoint = Integer.parseInt((String) CrawlerUtil.PROPERTIES.get("crawler.threadpoolsize"));
+		mail.setMsgName(doc.text().substring(0, msgNameEndPoint));
 		mail.setDirName("Generic_crawler");
 		MailDao mailDao = new MailDaoImpl();
 		mailDao.saveMail(mail);
@@ -104,6 +110,7 @@ public class CrawlerLeg {
 
 	public boolean isValidLink(String urlLink) {
 		return urlLink.contains(GenericCrawlerImpl.rootUrl);
+
 	}
 
 }

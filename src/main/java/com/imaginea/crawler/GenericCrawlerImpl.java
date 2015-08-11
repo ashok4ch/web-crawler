@@ -3,6 +3,8 @@ package com.imaginea.crawler;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 
@@ -36,19 +38,23 @@ public class GenericCrawlerImpl implements Crawler {
 
 	private void processURL(String url) {
 		logger.info("processURL has started with url: " + url);
-		Thread cProducer = new Thread(new CrawlerProducer(urlsToVisit, mailUrlQueue, urlsVisited, url));
-		cProducer.start();
+		int poolsize = Integer.parseInt((String) CrawlerUtil.PROPERTIES.get("crawler.threadpoolsize"));
+		ExecutorService executor = Executors.newFixedThreadPool(poolsize);
 
-		/*
-		 * ExecutorService executor = Executors.newFixedThreadPool(30); for(int
-		 * i=0; i<20; i++){ Thread cProducer = new Thread(new
-		 * CrawlerProducer(urlsToVisit, mailUrlQueue, urlsVisited, url)); Thread
-		 * cConsumer = new Thread(new CrawlerConsumer(mailUrlQueue,
-		 * urlsToVisit)); executor.execute(cProducer);
-		 * executor.execute(cConsumer); } executor.shutdown();
-		 */
-		Thread cConsumer = new Thread(new CrawlerConsumer(mailUrlQueue, urlsToVisit));
-		cConsumer.start();
+		for (int i = 0; i <= poolsize; i++) {
+			if (i % 2 == 0) {
+				Thread cProducer = new Thread(new CrawlerProducer(urlsToVisit, mailUrlQueue, urlsVisited, url),
+						"Producer Thread" + i);
+				executor.execute(cProducer);
+
+			} else {
+
+				Thread cConsumer = new Thread(new CrawlerConsumer(mailUrlQueue, urlsToVisit), "consumerThread : " + i);
+				executor.execute(cConsumer);
+			}
+		}
+
+		executor.shutdown();
 	}
 
 }

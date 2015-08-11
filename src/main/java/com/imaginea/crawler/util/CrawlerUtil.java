@@ -17,7 +17,6 @@ public class CrawlerUtil {
 	private static Logger logger = Logger.getLogger(CrawlerUtil.class);
 	private static Scanner scan = new Scanner(System.in);
 	public static final Properties PROPERTIES = new Properties();
-	public static File rootDir;
 
 	static {
 		try {
@@ -39,15 +38,13 @@ public class CrawlerUtil {
 	}
 
 	public static File getRootDir(String dirName) {
-		if(rootDir == null){
 			StringBuilder fullPath = new StringBuilder(CrawlerUtil.PROPERTIES.getProperty("crawler.rootdir"));
 			if (dirName != null) {
 				fullPath.append(File.separator).append(dirName);
 			}
 			logger.info("getRootDir has started path :" + fullPath.toString());
-			rootDir = new File(fullPath.toString());
+			File rootDir = new File(fullPath.toString());
 			rootDir.mkdirs();
-		}
 		
 		return rootDir;
 	}
