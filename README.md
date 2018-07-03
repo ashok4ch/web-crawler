@@ -33,4 +33,4 @@ For Generic crawler
 
 	
 	
-Note:  Separate design document attached in same project which as class diagrams and flow chart.
+Note:  Separate design document attached in same project which has class and flow chart diagrams.
